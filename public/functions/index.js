@@ -4,7 +4,6 @@ const { google } = require("googleapis");
 
 admin.initializeApp();
 
-// TODO.07
 // exports.helloWorld = functions.https.onRequest((request, response) => {
 //   response.send("Hello from Firebase!");
 //   console.log("console messages");
@@ -45,7 +44,6 @@ const createEmail = (data) => {
   return (base64EncodedEmail = new Buffer(email).toString("base64").replace(/\+/g, "-").replace(/\//g, "_"));
 };
 
-// TODO.15-1
 // // 環境変数、json ファイル読み込み
 // const toAddress = functions.config().to.address;
 // const credentialsJson = require("./credentials.json");
@@ -68,25 +66,5 @@ const createEmail = (data) => {
 //   } catch (err) {
 //     console.error(`send failed. ${err}`);
 //     throw new functions.https.HttpsError("internal", "send failed.");
-//   }
-// });
-
-// TODO.17-1
-// exports.storeMail = functions.firestore.document("mailForm/{Id}").onCreate(async (snap, context) => {
-//   // メール情報の作成
-//   const auth = createAuth(credentialsJson, tokenJson);
-//   const gmail = google.gmail({ version: "v1", auth });
-//   const email = createEmail(snap.data());
-
-//   // メール送付
-//   try {
-//     gmail.users.messages.send({
-//       userId: "me",
-//       resource: {
-//         raw: email,
-//       },
-//     });
-//   } catch (err) {
-//     console.error(`send failed. ${err}`);
 //   }
 // });

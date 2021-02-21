@@ -1,24 +1,15 @@
-// main.js
 "use strict";
 
 // Initializes MailForm.
 function MailForm() {
-  // Shortcuts to DOM Elements.
+  // get DOM Elements.
   this.nameInput = document.getElementById("name");
   this.emailInput = document.getElementById("email");
   this.messageInput = document.getElementById("message");
   this.snackbar = document.getElementById("snackbar");
-
-  // メール送信ボタン
   this.sendButton = document.getElementById("send");
   this.sendButton.addEventListener("click", this.sendMessage.bind(this));
 
-  // TODO.17-3
-  // メール保存&送信ボタン
-  // this.saveButton = document.getElementById("save");
-  // this.saveButton.addEventListener("click", this.saveMessage.bind(this));
-
-  // ボタン表示・非表示
   const buttonTogglingHandler = this.toggleButton.bind(this);
   this.nameInput.addEventListener("change", buttonTogglingHandler);
   this.nameInput.addEventListener("keyup", buttonTogglingHandler);
@@ -28,9 +19,7 @@ function MailForm() {
   this.messageInput.addEventListener("keyup", buttonTogglingHandler);
 }
 
-// メール送付
 MailForm.prototype.sendMessage = async function (e) {
-  //TODO.15-2
   // e.preventDefault();
   // const data = {
   //   name: this.nameInput.value,
@@ -46,34 +35,11 @@ MailForm.prototype.sendMessage = async function (e) {
   // }
 };
 
-// メール保存&送付
-MailForm.prototype.saveMessage = async function (e) {
-  //TODO.17-4
-  //   e.preventDefault();
-  //   const ref = firebase.firestore().collection("mailForm");
-  //   try {
-  //     await ref.add({
-  //       name: this.nameInput.value,
-  //       email: this.emailInput.value,
-  //       message: this.messageInput.value,
-  //       timestamp: new Date()
-  //     });
-  //     this.successSnackbar();
-  //     this.resetForm();
-  //   } catch {
-  //     this.errorSnackbar();
-  //   }
-};
-
 MailForm.prototype.toggleButton = function () {
   if (this.nameInput.value && this.emailInput.value && this.messageInput.value) {
     this.sendButton.removeAttribute("disabled");
-    // TODO.17-5
-    // this.saveButton.removeAttribute("disabled");
   } else {
     this.sendButton.setAttribute("disabled", "true");
-    // TODO.17-6
-    // this.saveButton.setAttribute("disabled", "true");
   }
 };
 
