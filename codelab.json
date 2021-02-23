@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-02-23T08:38:10Z",
+  "id": "handson-firebase-mail-form",
+  "duration": 3,
+  "title": "Firebaseハンズオンお問い合わせフォーム",
+  "authors": "kou72",
+  "summary": "Firebaseハンズオンお問い合わせフォーム",
+  "source": "1TUGTy95ZXcNQp_YtpY-N1S4b2YIwKU4pKPOfRcV-Qb4",
+  "theme": "firebase",
+  "status": [
+    "draft"
+  ],
+  "category": [
+    "Firebase"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/MarkingCloud/handson-firebase-mail-form",
+  "url": "handson-firebase-mail-form"
+}

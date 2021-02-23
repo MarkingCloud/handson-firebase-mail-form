@@ -1,0 +1,429 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Firebaseハンズオンお問い合わせフォーム</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="handson-firebase-mail-form"
+                  title="Firebaseハンズオンお問い合わせフォーム"
+                  environment="web"
+                  feedback-link="https://github.com/MarkingCloud/handson-firebase-mail-form">
+    
+      <google-codelab-step label="はじめに" duration="0">
+        <h2 is-upgraded><strong>概要</strong></h2>
+<p>実際にお問い合わせフォームを作りながら、Firebaseの使い方を学びましょう！</p>
+<p class="image-container"><img style="width: 601.70px" src="img/5ba8f24b75805d05.png"></p>
+<p><a href="https://markingcloud.github.io/handson-firebase-mail-form/sample/" target="_blank"><paper-button class="colored" raised>サンプルアプリ</paper-button></a></p>
+<h2 class="checklist" is-upgraded><strong>What you&#39;ll learn</strong></h2>
+<ul class="checklist">
+<li>Firebaseとは何か分かる</li>
+<li>Cloud Functionsの追加たが分かる</li>
+<li>サービスを公開するまでの流れがわかる</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="今回のハンズオンのポイント" duration="3">
+        <h2 is-upgraded><strong>Cloud Functionsを（ちょっと）使いこなす</strong></h2>
+<p>Cloud Functions for Firebaseをメインに利用します。</p>
+<p>基本的な使い方やログの見方を学びましょう。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/65fcc6615e289f02.png"></p>
+<h2 is-upgraded><strong>OAuth認証について（ちょっと）詳しくなる</strong></h2>
+<p>GmailのAPIにアクセスするためにOAuth認証というものを利用しています。</p>
+<p>実際に手元で動かして、動作を確かめてみましょう。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/382a21f13618d4f7.png"></p>
+<h2 is-upgraded><strong>Firebase でサービスを公開する流れを知る</strong></h2>
+<p>Firebase でサービスを公開してみて、その手軽さを体感してみましょう。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/a62004d529edb03.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="事前準備" duration="0">
+        <h2 is-upgraded><strong>アーキテクチャ概要図</strong></h2>
+<p class="image-container"><img style="width: 601.70px" src="img/ed0dfaad7016457c.png"></p>
+<ul>
+<li>ClientがブラウザでHostingにアクセスし、html, css, jsのWebアプリを表示</li>
+<li>WebアプリからFunctionsを呼び出し</li>
+<li>FunctionsからGmail APIを呼び出し</li>
+</ul>
+<h2 is-upgraded> <strong>Cloud Shellとは</strong></h2>
+<ul>
+<li>GCPのサービスの一つ</li>
+<li>ブラウザでアクセス可能な、クラウドベースの統合開発環境(IDE)</li>
+<li>Githubと連携することで簡単に開発環境を構築可能</li>
+</ul>
+<p><a href="https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/MarkingCloud/handson-firebase-mail-form.git" target="_blank"><paper-button class="colored" raised>Cloud Shellへリポジトリをクローンする</paper-button></a></p>
+<p>上のリンクをクリックするとCloud Shellが開き、リポジトリをクローンしてコードを取得してきます。</p>
+<p>ディレクトリ構成はこんな感じになっています。</p>
+<pre>mail-form
+├── README.md
+├── firebase.json
+│
+├── functions    &lt;---- Functionsで使用
+│   ├── index.js
+│   └── package.json
+│
+├── oauth        &lt;---- Gmailの認証に使用
+│   └── index.js
+│
+└── public       &lt;---- お問い合わせフォームのweb画面
+    ├── image
+    │   └── MC_icon_white.png
+    ├── index.html
+    ├── scripts
+    │   └── main.js
+    └── styles
+        └── main.css</pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Firebaseプロジェクトの作成" duration="0">
+        <h2 is-upgraded><strong>プロジェクトの作成</strong></h2>
+<p><a href="https://console.firebase.google.com/" target="_blank"><paper-button class="colored" raised>Firebaseのコンソール</paper-button></a>を開き、次の操作を行います。</p>
+<ul>
+<li>「プロジェクトを追加」を選択。</li>
+<li>好きなプロジェクト名を入力して「続行」を選択。</li>
+<li>Google アナリティクスは無効にして「作成」を選択。</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/36f957e9b4dfba0d.png"></p>
+<h2 is-upgraded><strong>Firebase プロジェクトを紐付け</strong></h2>
+<p>Cloud Shell で以下のコマンドを実行します。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase login --no-localhost --reauth</pre>
+<p>Firebaseプロジェクトを作成したアカウントでログインし、表示されるトークンをCloudShellにペーストして、CloudShellとFirebaseプロジェクトの紐付け完了です。</p>
+<aside class="warning"><p><strong>注意: </strong>URLはクリックせずcopy&amp;pastしてください</p>
+</aside>
+<p class="image-container"><img style="width: 601.70px" src="img/780eb653190835c3.png"></p>
+<p>次のコマンドで先ほど作成したプロジェクトのプロジェクトIDを確認します。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase projects:list</pre>
+<aside class="special"><p>プロジェクトIDは「プロジェクトを設定」からも確認可能です。</p>
+<p class="image-container"><img style="width: 587.00px" src="img/70865537564694a7.png"></p>
+</aside>
+<p>次のコマンドで作成したプロジェクトを設定します。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase use &lt;PROJECT_ID&gt; // &lt;PROJECT_ID&gt;はさっきメモしたものに書き換えます</pre>
+<p>確認コマンドで正しいプロジェクトに (current) とついていればOKです。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase projects:list</pre>
+<p class="image-container"><img style="width: 601.70px" src="img/ec2cf65e796f8be2.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Firebaseの設定" duration="0">
+        <h2 is-upgraded><strong>Firebaseのプランを変更</strong></h2>
+<p>Firebase Functionsを利用するため、料金プランを変更する必要があります。</p>
+<p>次の操作を行います。</p>
+<ul>
+<li>左メニューの「アップグレード」選択</li>
+<li>従量制の「プランを選択」を選択</li>
+<li>請求先を「main」に設定して「次へ」を選択</li>
+<li>「購入」を選択</li>
+</ul>
+<aside class="special"><p>課金が心配な場合は「予算アラート設定」から基準の金額を設定してください。</p>
+</aside>
+<p class="image-container"><img style="width: 601.70px" src="img/86268d6b99d41e9a.png"></p>
+<h2 is-upgraded><strong>Firebaseコンソールからアプリを追加</strong></h2>
+<p>Firebaseではアプリという単位でリソースを管理します。</p>
+<p>次の操作を行います。</p>
+<ul>
+<li>コンソールトップ画面のwebマーク(<code></></code>)を選択</li>
+<li>任意のアプリのニックネームを設定</li>
+<li>「このアプリの Firebase Hosting も設定します。」にチェック</li>
+<li>「アプリを登録」を選択</li>
+<li>②③④は事前に準備済みなので<strong>何もせず</strong>「次へ」</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/5abae3b9c758ab43.png"></p>
+<h2 is-upgraded><strong>ローカルで動作確認</strong></h2>
+<p>以下コマンドでローカル環境で動作確認を行います。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase serve --only hosting</pre>
+<p class="image-container"><img style="width: 601.70px" src="img/b893e50272dd8a7a.png"></p>
+<aside class="warning"><p><strong>注意: </strong>URLはcopy&amp;pastせずクリックしてください</p>
+</aside>
+<p>出力されたURLをクリックしてこんな画面が表示されたらOK。(まだメールはできない)</p>
+<p class="image-container"><img style="width: 568.86px" src="img/7e4560d07ec411d2.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Functionsを使ってみる" duration="0">
+        <h2 is-upgraded><strong>Cloud Functions for Firebase とは？</strong></h2>
+<p>Cloud Functions for FirebaseとはGoogleの提供しているFaaS（Function as a Serbise）のFirebase版。</p>
+<p><a href="https://firebase.google.com/docs/functions/manage-functions?hl=ja#set_runtime_options" target="_blank">利用できるランタイムが Node.js に限定される</a>代わりに、他Firebase機能との連携が簡単。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/65fcc6615e289f02.png"></p>
+<h2 is-upgraded><strong>FaaSとは？</strong></h2>
+<p>Function as a Serbiseの略で、マイクロサービス化の流れを受けて流行ったサービス。</p>
+<p>「関数」という単位でクラウド上に保管/呼び出しが可能。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/838c07b60e9dfdfe.png"></p>
+<h2 is-upgraded><strong>Functionsの作成</strong></h2>
+<p>利用するパッケージをfunctions/ にインストールします。</p>
+<p><code>CloudShell</code></p>
+<pre>npm install --prefix=~/cloudshell_open/handson-firebase-mail-form/functions/</pre>
+<p>簡単な関数「helloWorl」を作成します。</p>
+<p><code>functions/index.js : L7 ~ 10 の コメントを解除</code></p>
+<pre>exports.helloWorld = functions.https.onRequest((request, response) =&gt; {
+  response.send(&#34;Hello from Firebase!&#34;);
+  console.log(&#34;console messages&#34;)
+});</pre>
+<aside class="special"><p><strong>Ctrl + /</strong> でコメント解除が可能です。</p>
+</aside>
+<h2 is-upgraded>Functionsをデプロイ/実行</h2>
+<p>以下コマンドで「helloWorl」をデプロイします。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase deploy --only functions</pre>
+<p>デプロイが完了すると関数にアクセスするURLが「Function URL (helloWorld)」に出力されます。</p>
+<p>curlコマンドで実行して「Hello from Firebase!」と返ってきたら成功です。        </p>
+<p><code>CloudShell</code></p>
+<pre>curl &lt;発行されたURL&gt;</pre>
+<aside class="special"><p>発行されたURLはFunctionsのダッシュボードからも確認可能です。</p>
+<p class="image-container"><img style="width: 587.00px" src="img/31d175848fe51109.png"></p>
+</aside>
+<p>実行ログはFunctionsのログから確認できます。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/9fe843c507cf86cf.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="OAuth認証でGmail APIにアクセスする" duration="0">
+        <p>Gmail API を使うためにOAuth認証を通す必要があります。</p>
+<p>OAuthとはアプリ連携でよく利用される認証方式です。</p>
+<p>OAuthの概要については<a href="https://tech-lab.sios.jp/archives/8026" target="_blank">こちらの記事</a>、詳細な動作については<a href="https://qiita.com/TakahikoKawasaki/items/e37caf50776e00e733be" target="_blank">こちらの記事</a>が分かりやすかったです。</p>
+<h2 is-upgraded><strong>OAuth認証</strong></h2>
+<p><a href="https://developers.google.com/gmail/api/quickstart/nodejs?hl=ja" target="_blank"><paper-button class="colored" raised>Gmail API Node.js Quickstart</paper-button></a>の手順でAPI &amp; OAuthを有効化していきます。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/610501ebcfcc01b3.png"></p>
+<h2 is-upgraded><strong>STEP1</strong></h2>
+<p>Gmail API を有効化し、credentials.jsonを取得します。</p>
+<p>次の操作を行います。</p>
+<ul>
+<li>「Enable the Gmail API」を選択</li>
+<li>適当なプロジェクト名を入力して「NEXT」を選択</li>
+<li>Configure your OAuth clientに「Desktop app」を選択して「CREATE」を選択</li>
+<li>「DOWNLOAD CLIENT CONFIGURATION」を選択してcredentials.jsonを取得</li>
+<li>「DONE」を選択</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/c53db3a23acf1857.png"></p>
+<p>次にcredentials.json を oauth/ にアップロードします。</p>
+<p>次の操作を行います。</p>
+<ul>
+<li>oauthフォルダ上で右クリック</li>
+<li>「Upload Files...」を選択</li>
+<li>credentials.jsonをアップロードする</li>
+</ul>
+<p class="image-container"><img style="width: 493.00px" src="img/3844156ac7dd284.png"></p>
+<h2 is-upgraded><strong>STEP2</strong></h2>
+<p>oauth/ にクライアントライブラリをインストールします。</p>
+<p><code>CloudShell</code></p>
+<pre>npm install googleapis@39 --prefix=~/cloudshell_open/handson-firebase-mail-form/oauth/</pre>
+<h2 is-upgraded><strong>STEP3</strong></h2>
+<p>トークンを取得するためにindex.jsを実行します。</p>
+<p><code>CloudShell</code></p>
+<pre>cd ~/cloudshell_open/handson-firebase-mail-form/oauth/
+node index.js</pre>
+<p>次の操作を行います。</p>
+<ul>
+<li>出力されたURLへアクセスする</li>
+</ul>
+<aside class="warning"><p><strong>注意: </strong>URLはクリックせずcopy&amp;pastしてください</p>
+</aside>
+<ul>
+<li>自分のアカウントを選択</li>
+<li>「詳細」&gt;「安全ではないページに移動」を選択</li>
+<li>メールメッセージと設定の表示で「許可」を選択</li>
+<li>ユーザー本人に代わってメールを送信で「許可」を選択</li>
+<li>選択内容を確認して「許可」を選択</li>
+<li>コードをコピーしてCloudShell「Enter the code from that page here」に貼り付け</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/5d4bb97503e27e7e.png"></p>
+<p>成功すると token.json が生成されラベルが表示されます。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/e6dfbaf586920aab.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="メール送付機能を実装" duration="0">
+        <h2 is-upgraded><strong>jsonファイルの移動</strong></h2>
+<p>取得したjsonファイルを functions/ に移動します。</p>
+<p>次の操作を行ってください。</p>
+<ul>
+<li>oauth/credentials.json を functionsディレクトリにドラック&amp;ドロップする</li>
+<li>oauth/token.json を functionsディレクトリにドラック&amp;ドロップする</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/73d71a3c07f8cb66.png"></p>
+<h2 is-upgraded><strong>メールアドレスの登録</strong></h2>
+<p>送付先メールアドレスを環境変数として登録します。</p>
+<p>次のコマンドでfunctionsから呼び出せる環境変数を登録することができます。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase functions:config:set to.address=&#34;email@gmail.com&#34;</pre>
+<aside class="warning"><p><strong>注意: </strong>自分のGmailアドレスを入力してください。</p>
+</aside>
+<h2 is-upgraded><strong>関数の作成</strong></h2>
+<p>メール送付の関数「sendMail」を作成します。</p>
+<p><code>functions/index.js : L47 ~ 70 の コメントを解除</code></p>
+<pre>// 環境変数、json ファイル読み込み
+const toAddress = functions.config().to.address;
+const credentialsJson = require(&#34;./credentials.json&#34;);
+const tokenJson = require(&#34;./token.json&#34;);
+
+exports.sendMail = functions.https.onCall(async (data, context) =&gt; {
+  // メール情報の作成
+  const auth = createAuth(credentialsJson, tokenJson);
+  const gmail = google.gmail({ version: &#34;v1&#34;, auth });
+  const email = createEmail(data);
+
+  // メール送付
+  try {
+    gmail.users.messages.send({
+      userId: &#34;me&#34;,
+      resource: {
+        raw: email,
+      },
+    });
+  } catch (err) {
+    console.error(`send failed. ${err}`);
+    throw new functions.https.HttpsError(&#34;internal&#34;, &#34;send failed.&#34;);
+  }
+});</pre>
+<h2 is-upgraded><strong>Functionsをデプロイ/実行</strong></h2>
+<p>以下コマンドで「sendMail」をデプロイします。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase deploy --only functions</pre>
+<h2 is-upgraded><strong>関数呼び出し側の作成</strong></h2>
+<p>web画面からfunctionsを呼び出す処理を記述します。</p>
+<p><code>public/scripts/main.js : L23 ~ 35 の コメントを解除</code></p>
+<pre>MailForm.prototype.sendMessage = async function (e) {
+  e.preventDefault();
+  const data = {
+    name: this.nameInput.value,
+    email: this.emailInput.value,
+    message: this.messageInput.value,
+  };
+  try {
+    await firebase.functions().httpsCallable(&#34;sendMail&#34;)(data);
+    this.successSnackbar();
+    this.resetForm();
+  } catch {
+    this.errorSnackbar();
+  }
+};</pre>
+<h2 is-upgraded><strong>ローカルで動作確認</strong></h2>
+<p>以下コマンドでローカル環境で動作確認を行います。</p>
+<p>メールが送付できるようになっていれば成功です。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase serve --only hosting</pre>
+<p class="image-container"><img style="width: 601.70px" src="img/25391c93582aa443.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="アプリをインターネットに公開する" duration="0">
+        <h2 is-upgraded><strong>Webサービスをデプロイする</strong></h2>
+<p>アプリをインターネットに公開し、誰でもアクセスできるようにするため、Firebase Hosting にデプロイします。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase deploy</pre>
+<p class="image-container"><img style="width: 601.70px" src="img/5ade1fdfa2053e73.png"></p>
+<p>自動的に URL が振られ、どこからでもアクセス可能！</p>
+<ul>
+<li>Hosting URL: に表示されている URL にアクセスすると、作成したアプリが表示されます。</li>
+<li>インターネットに公開されているので、他の端末からもアクセスできます！</li>
+</ul>
+<p>コンソールのHostingから発行されたURLとデプロイ履歴などが確認できます。</p>
+<p class="image-container"><img style="width: 601.70px" src="img/2b54c67eae992f77.png"></p>
+<h2 is-upgraded><strong>Webページにアクセスして動作確認する</strong></h2>
+<p>発行されたURLへアクセスして動作確認を行います。</p>
+<p>適当なお問い合わせ内容を送付してみましょう！</p>
+<p class="image-container"><img style="width: 601.70px" src="img/871381a4850b74b6.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="終わりに" duration="0">
+        <p>Firebaseを使ってお問い合わせフォームを作成することができました！</p>
+<p>ここから先は各自思い思いに改良してみてください。</p>
+<h2 is-upgraded><strong>アンケート</strong></h2>
+<p>最後にアンケートがありますので、より良い勉強会作りのためにご協力お願い致します。</p>
+<aside class="special"><h2 is-upgraded>MarkingCloudをフォロー！</h2>
+<h3 is-upgraded><strong>Twitterやってます！</strong></h3>
+<p>MarkingCloudメンバーで<a href="https://twitter.com/MarkingCloud" target="_blank">Twitter</a>をやってます。</p>
+<p>クラウド関連の情報や、その他(キングダム、左利きのエレンなど)を不定期でつぶやきます。</p>
+<p>よろしければのぞいてみてください！(フォローもお願いします！)</p>
+<h3 is-upgraded><strong>(株)アイソルートのHPです！</strong></h3>
+<p>運営スタッフが所属する<a href="https://www.isoroot.jp/" target="_blank">(株)アイソルートのHP</a>です。</p>
+<p>一緒にお仕事できそうな方、転職を考えている方など、</p>
+<p>よろしければのぞいてみて下さい！</p>
+<h3 is-upgraded><strong>ブログやってます！</strong></h3>
+<p>運営スタッフの所属する<a href="https://www.isoroot.jp/blog/" target="_blank">(株)アイソルートの仲間たちが書いてるブログ</a>です。</p>
+<p>以下のような雑多なテーマでいろいろ書いています。</p>
+<p>よろしければのぞいてみてください！</p>
+<ul>
+<li>Amazon Web Services(3)</li>
+<li>DevOps(9)</li>
+<li>Google Cloud Platform(33)</li>
+<li>Microsoft Azure(4)</li>
+<li>Web開発(7)</li>
+<li>アジャイル(4)</li>
+<li>インフラ(9)</li>
+<li>スマートスピーカー(3)</li>
+<li>チャットボット(3)</li>
+<li>ネットワーク(7)</li>
+<li>モバイル開発(20)</li>
+<li>レポート(8)</li>
+<li>記事(5)</li>
+</ul>
+<h3 is-upgraded><strong>コミュトレ！</strong></h3>
+<p>運営スタッフの所属する(株)アイソルートが提供している<a href="https://commu-training.isoroot.jp/" target="_blank">「コミュトレ」</a>という教育サービスです！</p>
+<p>社会人のコミュニケーション能力のトレーニングを行うサービスです。</p>
+<p>面白いサービスですのでぜひ見てみて下さい！</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="おまけ : プロジェクトの削除" duration="0">
+        <p>利用しないプロジェクトは削除するようにしましょう。</p>
+<p>次の手順を実行してください。</p>
+<ul>
+<li>削除対象のプロジェクトへ移動する</li>
+<li>「歯車マーク」&gt;「プロジェクトを設定」を選択</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/3832f8ca059b4e5f.png"></p>
+<ul>
+<li>一番下までスクロールし、「プロジェクトを削除」を選択</li>
+<li>チェック項目を確認して「プロジェクトを削除」を選択</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
