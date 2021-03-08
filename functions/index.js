@@ -38,7 +38,7 @@ const createEmail = (data) => {
     `MIME-Version: 1.0\n`,
     `Content-Transfer-Encoding: 7bit\n`,
     `to: ${toAddress} \n`,
-    `subject: Message from ${process.env.GCP_PROJECT} \n\n`,
+    `subject: Message from Functions:${process.env.FUNCTION_TARGET} \n\n`,
     `${inquiry(data)}`,
   ].join("");
   return (base64EncodedEmail = new Buffer(email).toString("base64").replace(/\+/g, "-").replace(/\//g, "_"));
