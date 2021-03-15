@@ -35,15 +35,41 @@
 <h2 class="checklist" is-upgraded><strong>What you&#39;ll learn</strong></h2>
 <ul class="checklist">
 <li>Firebaseとは何か分かる</li>
-<li>Cloud Functionsの追加たが分かる</li>
+<li>Cloud Functionsの使い方が分かる</li>
 <li>サービスを公開するまでの流れがわかる</li>
 </ul>
 
 
       </google-codelab-step>
     
+      <google-codelab-step label="Firebaseとは" duration="0">
+        <p>アプリ開発のためのクラウド mBaas (mobile Backend as a Service)</p>
+<ul>
+<li>アプリ開発に必要な機能（DB, Storage, etc.）</li>
+<li>インフラ周りの構築、メンテナンスが不要</li>
+<li>2014年に Google が買収し、GCP の一部に</li>
+<li>無料枠が大きい</li>
+</ul>
+<p><a href="https://cloud.google.com/blog/products/gcp/choosing-the-right-compute-option-in-gcp-a-decision-tree" target="_blank">Choosing the right compute option in GCP: a decision tree</a></p>
+<p class="image-container"><img style="width: 601.70px" src="img/6b81f730c653d622.png"></p>
+<p><a href="https://firebase.google.com/pricing?authuser=0" target="_blank">料金プラン</a></p>
+<p class="image-container"><img style="width: 594.50px" src="img/475e5e69dd87a1e3.png"></p>
+
+
+      </google-codelab-step>
+    
       <google-codelab-step label="ハンズオンのポイント" duration="0">
-        <h2 is-upgraded><strong>Cloud Functionsを（ちょっと）使いこなす</strong></h2>
+        <h2 is-upgraded><strong>注意！</strong></h2>
+<aside class="warning"><p><strong>①Gmailアカウントを利用してください。</strong></p>
+<p>今回のハンズオンはGmail以外のメールアドレスには対応していません。</p>
+<p>FirebaseにサインインするGoogleアカウントがGmailを持っていることを確認してください。</p>
+</aside>
+<aside class="warning"><p><strong>②クレジットカードを登録する必要があります。</strong></p>
+<p>Cloud Functionsが使えるプランに変更する際に、クレジットカードの登録が求められます。</p>
+<p>また一旦作成した請求先アカウントは<strong>削除不可</strong>なようです。</p>
+<p>ご了承ください。</p>
+</aside>
+<h2 is-upgraded><strong>Cloud Functionsを（ちょっと）使いこなす</strong></h2>
 <p>Cloud Functions for Firebaseをメインに利用します。</p>
 <p>基本的な使い方やログの見方を学びましょう。</p>
 <p class="image-container"><img style="width: 601.70px" src="img/65fcc6615e289f02.png"></p>
@@ -94,6 +120,12 @@
     │   └── main.js
     └── styles
         └── main.css</pre>
+<aside class="warning"><p>うまく開かない場合は<a href="https://shell.cloud.google.com/" target="_blank"><paper-button class="colored" raised>Cloud Shell</paper-button></a>に移動してから以下打ち込んでください。</p>
+</aside>
+<pre>mkdir cloudshell_open
+cd cloudshell_open
+git clone https://github.com/MarkingCloud/handson-firebase-mail-form.git
+cd handson-firebase-mail-form</pre>
 
 
       </google-codelab-step>
@@ -134,12 +166,17 @@
     
       <google-codelab-step label="Firebaseの設定" duration="0">
         <h2 is-upgraded><strong>Firebaseのプランを変更</strong></h2>
+<p>ここからまたFirebaseのコンソールで操作を行います。</p>
 <p>Firebase Functionsを利用するため、料金プランを変更する必要があります。</p>
 <p>次の操作を行います。</p>
 <ul>
 <li>左メニューの「アップグレード」選択</li>
 <li>従量制の「プランを選択」を選択</li>
-<li>請求先を「main」に設定して「次へ」を選択</li>
+<li>請求先を設定して「次へ」を選択</li>
+</ul>
+<aside class="warning"><p>請求先の登録がまだの人は<a href="https://console.cloud.google.com/billing?project=&folder=&organizationId=0&authuser=0&consoleUI=FIREBASE" target="_blank">リンクの設定画面</a>から請求先を登録してください。</p>
+</aside>
+<ul>
 <li>「購入」を選択</li>
 </ul>
 <aside class="special"><p>課金が心配な場合は「予算アラート設定」から基準の金額を設定してください。</p>
@@ -159,7 +196,7 @@
 <h2 is-upgraded><strong>ローカルで動作確認</strong></h2>
 <p>以下コマンドでローカル環境で動作確認を行います。</p>
 <p><code>CloudShell</code></p>
-<pre>firebase serve --only hosting</pre>
+<pre>firebase serve --only hosting -p 8080</pre>
 <p class="image-container"><img style="width: 601.70px" src="img/b893e50272dd8a7a.png"></p>
 <aside class="warning"><p><strong>注意: </strong>URLはcopy&amp;pastせずクリックしてください</p>
 </aside>
@@ -171,18 +208,18 @@
     
       <google-codelab-step label="Functionsを使ってみる" duration="0">
         <h2 is-upgraded><strong>Cloud Functions for Firebase とは？</strong></h2>
-<p>Cloud Functions for FirebaseとはGoogleの提供しているFaaS（Function as a Serbise）のFirebase版。</p>
+<p>Cloud Functions for FirebaseとはGoogleの提供しているFaaS（Function as a Servise）のFirebase版。</p>
 <p><a href="https://firebase.google.com/docs/functions/manage-functions?hl=ja#set_runtime_options" target="_blank">利用できるランタイムが Node.js に限定される</a>代わりに、他Firebase機能との連携が簡単。</p>
 <p class="image-container"><img style="width: 601.70px" src="img/65fcc6615e289f02.png"></p>
 <h2 is-upgraded><strong>FaaSとは？</strong></h2>
-<p>Function as a Serbiseの略で、マイクロサービス化の流れを受けて流行ったサービス。</p>
+<p>Function as a Serviseの略で、マイクロサービス化の流れを受けて流行ったサービス。</p>
 <p>「関数」という単位でクラウド上に保管/呼び出しが可能。</p>
 <p class="image-container"><img style="width: 601.70px" src="img/838c07b60e9dfdfe.png"></p>
 <h2 is-upgraded><strong>Functionsの作成</strong></h2>
 <p>利用するパッケージをfunctions/ にインストールします。</p>
 <p><code>CloudShell</code></p>
 <pre>npm install --prefix=~/cloudshell_open/handson-firebase-mail-form/functions/</pre>
-<p>簡単な関数「helloWorl」を作成します。</p>
+<p>簡単な関数「helloWorld」を作成します。</p>
 <p><code>functions/index.js : L7 ~ 10 の コメントを解除</code></p>
 <pre>exports.helloWorld = functions.https.onRequest((request, response) =&gt; {
   response.send(&#34;Hello from Firebase!&#34;);
@@ -191,9 +228,9 @@
 <aside class="special"><p><strong>Ctrl + /</strong> でコメント解除が可能です。</p>
 </aside>
 <h2 is-upgraded>Functionsをデプロイ/実行</h2>
-<p>以下コマンドで「helloWorl」をデプロイします。</p>
+<p>以下コマンドで「helloWorld」をデプロイします。</p>
 <p><code>CloudShell</code></p>
-<pre>firebase deploy --only functions</pre>
+<pre>firebase deploy</pre>
 <p>デプロイが完了すると関数にアクセスするURLが「Function URL (helloWorld)」に出力されます。</p>
 <p>curlコマンドで実行して「Hello from Firebase!」と返ってきたら成功です。        </p>
 <p><code>CloudShell</code></p>
@@ -277,7 +314,10 @@ node index.js</pre>
 <p>次のコマンドでfunctionsから呼び出せる環境変数を登録することができます。</p>
 <p><code>CloudShell</code></p>
 <pre>firebase functions:config:set to.address=&#34;email@gmail.com&#34;</pre>
-<aside class="warning"><p><strong>注意: </strong>自分のGmailアドレスを入力してください。</p>
+<p>次のコマンドで正しく登録できているか確認しましょう。</p>
+<p><code>CloudShell</code></p>
+<pre>firebase functions:config:get</pre>
+<aside class="warning"><p><strong>注意:</strong> トークン取得に利用したGmailアドレスを入力してください。</p>
 </aside>
 <h2 is-upgraded><strong>関数の作成</strong></h2>
 <p>メール送付の関数「sendMail」を作成します。</p>
@@ -332,7 +372,7 @@ exports.sendMail = functions.https.onCall(async (data, context) =&gt; {
 <p>以下コマンドでローカル環境で動作確認を行います。</p>
 <p>メールが送付できるようになっていれば成功です。</p>
 <p><code>CloudShell</code></p>
-<pre>firebase serve --only hosting</pre>
+<pre>firebase serve --only hosting -p 8080</pre>
 <p class="image-container"><img style="width: 601.70px" src="img/25391c93582aa443.png"></p>
 
 
@@ -402,7 +442,8 @@ exports.sendMail = functions.https.onCall(async (data, context) =&gt; {
       </google-codelab-step>
     
       <google-codelab-step label="おまけ : プロジェクトの削除" duration="0">
-        <p>利用しないプロジェクトは削除するようにしましょう。</p>
+        <h2 is-upgraded><strong>プロジェクト削除</strong></h2>
+<p>利用しないプロジェクトは削除するようにしましょう。</p>
 <p>次の手順を実行してください。</p>
 <ul>
 <li>削除対象のプロジェクトへ移動する</li>
@@ -413,6 +454,15 @@ exports.sendMail = functions.https.onCall(async (data, context) =&gt; {
 <li>一番下までスクロールし、「プロジェクトを削除」を選択</li>
 <li>チェック項目を確認して「プロジェクトを削除」を選択</li>
 </ul>
+<h2 is-upgraded><strong>請求アカウント閉鎖</strong></h2>
+<p>請求先アカウントが不要な場合は以下の手順で閉鎖してください。</p>
+<ul>
+<li><a href="https://console.cloud.google.com/billing?project=&folder=&organizationId=0&authuser=0&consoleUI=FIREBASE" target="_blank">請求先の管理画面</a>から対象の請求先アカウントを選択</li>
+<li>請求先アカウントが正しく選択されていることを確認</li>
+<li>アカウント管理 &gt; 請求先アカウントを閉鎖</li>
+<li>「閉じる」と入力 &gt; 請求先アカウントを閉鎖</li>
+</ul>
+<p class="image-container"><img style="width: 601.70px" src="img/99baa0b02985d03a.png"></p>
 
 
       </google-codelab-step>
